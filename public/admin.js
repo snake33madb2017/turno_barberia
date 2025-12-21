@@ -95,7 +95,7 @@ function renderTabla(turnos) {
         <tr>
             <td data-label="Turno">#${t.numero}</td>
             <td data-label="Cliente">
-                ${t.nombre}
+                <strong>${t.nombre}</strong> <span style="font-size:0.85em; background:#eee; padding:2px 5px; border-radius:3px; margin-left:5px;">(${t.para_quien || 'Personal'})</span>
                 ${t.telefono ? `<br><small style="color:#666;">📞 ${t.telefono}</small>` : ''}
             </td>
             <td data-label="Estado" class="estado-${t.estado}">${t.estado.toUpperCase()}</td>
@@ -149,6 +149,23 @@ function reset(tipo) {
         });
 }
 
+// Forgot Password
+document.getElementById('forgot-password').addEventListener('click', (e) => {
+    e.preventDefault();
+    if (!confirm('¿Enviar la contraseña actual al correo configurado (snake33madb@gmail.com)?')) return;
+
+    fetch('/api/admin/recover', { method: 'POST' })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(err => alert('Error de conexión con el servidor.'));
+});
+
 // --- CMS Settings Logic ---
 const settingsForm = document.getElementById('settings-form');
 const inpApertura = document.getElementById('cfg-apertura');
@@ -157,6 +174,9 @@ const inpPausa = document.getElementById('cfg-pausa');
 const inpMsgPausa = document.getElementById('cfg-msg-pausa');
 const inpPass = document.getElementById('cfg-password');
 const checkboxesDias = document.querySelectorAll('input[name="dias"]');
+
+const inpEmailUser = document.getElementById('cfg-email-user');
+const inpEmailPass = document.getElementById('cfg-email-pass');
 
 function cargarSettings() {
     fetch('/api/settings')
@@ -168,7 +188,11 @@ function cargarSettings() {
             inpCierre.value = data.horario_cierre || "20:00";
             inpPausa.checked = data.pausa_activa || false;
             inpMsgPausa.value = data.mensaje_pausa || "";
-            // Password no se muestra por seguridad
+            // Password admin no se muestra
+
+            // Email Settings
+            inpEmailUser.value = data.email_user || "";
+            inpEmailPass.value = data.email_pass || "";
 
             // Checkboxes Dias
             const dias = data.dias_laborables || [];
@@ -192,7 +216,9 @@ settingsForm.addEventListener('submit', (e) => {
         horario_cierre: inpCierre.value,
         pausa_activa: inpPausa.checked,
         mensaje_pausa: inpMsgPausa.value,
-        dias_laborables: diasSeleccionados
+        dias_laborables: diasSeleccionados,
+        email_user: inpEmailUser.value.trim(),
+        email_pass: inpEmailPass.value.trim()
     };
 
     if (inpPass.value.trim() !== "") {
@@ -208,7 +234,6 @@ settingsForm.addEventListener('submit', (e) => {
         .then(data => {
             if (data.success) {
                 alert('Configuración guardada correctamente.');
-                // Si cambió password, tal vez recargar? Por ahora no forzamos logout.
             } else {
                 alert('Error al guardar configuración.');
             }

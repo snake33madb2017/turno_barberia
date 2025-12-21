@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Administrador</title>
+    <title>Admin - Peluquería Xoaquín</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -12,7 +12,7 @@
     <div class="container">
         <div class="box">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h2>Panel Administrador</h2>
+                <h2>Admin - Xoaquín</h2>
                 <a href="index.html" style="font-size:12px; text-decoration:none;">&larr; Volver</a>
             </div>
 
@@ -22,6 +22,10 @@
                 <form id="login-form">
                     <input type="password" id="admin-pass" placeholder="Contraseña" required>
                     <button type="submit">Ingresar</button>
+                    <p style="margin-top:10px; text-align:right;">
+                        <a href="#" id="forgot-password" style="font-size:0.9em; color:#0056b3;">¿Olvidaste tu
+                            contraseña?</a>
+                    </p>
                 </form>
                 <p id="login-error" style="color:red; display:none;">Contraseña incorrecta</p>
             </div>
@@ -44,6 +48,16 @@
                     <details>
                         <summary style="cursor:pointer; font-weight:bold;">⚙️ Configuración (CMS)</summary>
                         <form id="settings-form" style="margin-top:10px;">
+                            <!-- ... existing schedule fields ... -->
+                            <div
+                                style="margin-bottom:10px; padding:10px; background:rgba(255,255,255,0.7); border-radius:5px;">
+                                <strong>Configuración de Correo (Para recuperación):</strong>
+                                <p style="font-size:0.8em; margin-bottom:5px;">Necesario para que funcione "Olvidé mi
+                                    contraseña". Usa una "Contraseña de Aplicación" de Gmail.</p>
+                                <input type="text" id="cfg-email-user" placeholder="Tu correo Gmail (Sender)">
+                                <input type="password" id="cfg-email-pass" placeholder="Contraseña de Aplicación Gmail">
+                            </div>
+
                             <div style="margin-bottom:10px;">
                                 <label>Horario Apertura:</label>
                                 <input type="time" id="cfg-apertura" required>

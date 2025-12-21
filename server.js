@@ -1,11 +1,12 @@
 const express = require('express');
+const nodemailer = require('nodemailer');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const DATA_FILE = path.join(__dirname, 'data', 'data.json');
 
 // Middleware
@@ -31,7 +32,9 @@ function inicializarDatos() {
                 dias_laborables: [1, 2, 3, 4, 5, 6], // Lunes a Sabado
                 password_admin: "admin",
                 pausa_activa: false,
-                mensaje_pausa: "Estamos en un breve descanso. Volvemos pronto."
+                mensaje_pausa: "Estamos en un breve descanso. Volvemos pronto.",
+                email_user: "",
+                email_pass: ""
             }
         };
         fs.writeFileSync(DATA_FILE, JSON.stringify(initialState, null, 2));
@@ -99,40 +102,79 @@ function verificarReinicioDiario() {
 app.get('/api/status', (req, res) => {
     verificarReinicioDiario();
     const data = leerDatos();
-    const settings = data.settings;
+    const settings = data.settings; // Still use settings for manual pause
 
     const now = new Date();
-    const diaSemana = now.getDay(); // 0 = Domingo
+    const diaSemana = now.getDay(); // 0 = Domingo, 1 = Lunes...
     const horaActual = now.getHours();
     const minutoActual = now.getMinutes();
+    const tiempoActual = horaActual * 60 + minutoActual; // Minutos desde 00:00
 
-    // Convertir hora actual a string "HH:MM" para comparar facilmente
-    const horaString = `${String(horaActual).padStart(2, '0')}:${String(minutoActual).padStart(2, '0')}`;
-
-    let abierto = true;
+    let abierto = false;
     let mensaje = '';
+    let horarioHoy = '';
 
-    // 1. Check Pause Manual
+    // Lógica de Horarios "Barbería Snake"
+    // Helper: Convertir HH:MM a minutos
+    const toMin = (str) => {
+        const [h, m] = str.split(':').map(Number);
+        return h * 60 + m;
+    };
+
+    // 1. Verificación Inicial: ¿Abre hoy según Admin?
+    if (!settings.dias_laborables.includes(diaSemana)) {
+        abierto = false;
+        mensaje = "Hoy estamos cerrados por descanso semanal.";
+    } else {
+        // 2. Lógica de Horarios Automáticos
+        if (diaSemana >= 1 && diaSemana <= 5) {
+            // Lunes a Viernes
+            horarioHoy = "09:00 - 13:30 y 16:00 - 20:00";
+            if (
+                (tiempoActual >= toMin("09:00") && tiempoActual < toMin("13:30")) ||
+                (tiempoActual >= toMin("16:00") && tiempoActual < toMin("20:00"))
+            ) {
+                abierto = true;
+            } else {
+                if (tiempoActual >= toMin("13:30") && tiempoActual < toMin("16:00")) {
+                    mensaje = "Estamos en el descanso de mediodía (13:30 - 16:00).";
+                } else {
+                    mensaje = `Cerrado. Horario hoy: ${horarioHoy}`;
+                }
+            }
+        } else if (diaSemana === 6 || diaSemana === 0) {
+            // Sábado y Domingo -> 09:00 - 14:00 Y 16:00 - 20:00
+            horarioHoy = "09:00 - 14:00 y 16:00 - 20:00";
+            if (
+                (tiempoActual >= toMin("09:00") && tiempoActual < toMin("14:00")) ||
+                (tiempoActual >= toMin("16:00") && tiempoActual < toMin("20:00"))
+            ) {
+                abierto = true;
+            } else {
+                if (tiempoActual >= toMin("14:00") && tiempoActual < toMin("16:00")) {
+                    mensaje = "Estamos en el descanso de fin de semana (14:00 - 16:00).";
+                } else {
+                    mensaje = `Cerrado. Horario fin de semana: ${horarioHoy}`;
+                }
+            }
+        }
+    }
+
+    // Override Manual desde Panel Admin (Pausa activa)
     if (settings.pausa_activa) {
         abierto = false;
-        mensaje = settings.mensaje_pausa || "Pausa activa.";
+        mensaje = settings.mensaje_pausa || "Pausa momentánea del barbero.";
     }
-    // 2. Check Dias Laborables
-    else if (!settings.dias_laborables.includes(diaSemana)) {
-        abierto = false;
-        mensaje = 'Hoy la barbería descansa. Vuelve mañana con estilo.';
-    }
-    // 3. Check Horario
-    else if (horaString < settings.horario_apertura || horaString > settings.horario_cierre) {
-        abierto = false;
-        mensaje = `⏰ Horario de turnos: ${settings.horario_apertura} - ${settings.horario_cierre}`;
-    }
+
+    // Formatear hora para devolver
+    const horaString = `${String(horaActual).padStart(2, '0')}:${String(minutoActual).padStart(2, '0')}`;
 
     res.json({
         abierto,
         mensaje,
         fecha: obtenerFechaHoy(),
-        hora: horaString
+        hora: horaString,
+        horario: horarioHoy
     });
 });
 
@@ -145,6 +187,7 @@ app.get('/api/turnos', (req, res) => {
         numero: t.numero,
         nombre: t.nombre,
         telefono: t.telefono, // Incluir teléfono para admin
+        para_quien: t.para_quien, // Nuevo campo
         estado: t.estado,
         mensaje: t.mensaje,
         inicio: t.inicio,
@@ -156,7 +199,7 @@ app.get('/api/turnos', (req, res) => {
 // 3. Crear Turno
 app.post('/api/turnos', (req, res) => {
     verificarReinicioDiario();
-    const { nombre, telefono } = req.body;
+    const { nombre, telefono, para_quien } = req.body;
     if (!nombre) return res.status(400).json({ error: 'El nombre es obligatorio' });
 
     const data = leerDatos();
@@ -166,7 +209,8 @@ app.post('/api/turnos', (req, res) => {
         id: Date.now().toString(),
         numero: nuevoNumero,
         nombre: nombre,
-        telefono: telefono || '', // Guardar teléfono si existe
+        telefono: telefono || '',
+        para_quien: para_quien || 'Personal', // Default to Personal
         estado: 'pendiente',
         mensaje: 'Esperando turno',
         inicio: 0,
@@ -192,6 +236,7 @@ app.get('/api/turnos/:id', (req, res) => {
         id: turno.id,
         numero: turno.numero,
         nombre: turno.nombre,
+        para_quien: turno.para_quien,
         estado: turno.estado,
         inicio: turno.inicio,
         acumulado: turno.tiempo_acumulado,
@@ -317,6 +362,52 @@ app.post('/api/settings', (req, res) => {
     res.json({ success: true, settings: data.settings });
 });
 
+
+// ... (existing code for initialState settings) ...
+// The user's instruction to update `inicializarDatos` is not applicable to the provided snippet as the function is not present.
+// The stray settings block has been removed as requested.
+
+// 9. --- NEW CMS CONFIG ROUTES ---
+// ... (existing routes) ...
+
+// 10. Recuperar Contraseña
+app.post('/api/admin/recover', async (req, res) => {
+    const data = leerDatos();
+    const settings = data.settings;
+
+    if (!settings.email_user || !settings.email_pass) {
+        return res.status(400).json({ error: 'Falta configurar el correo de envío en el panel.' });
+    }
+
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: settings.email_user,
+            pass: settings.email_pass
+        }
+    });
+
+    const mailOptions = {
+        from: settings.email_user,
+        to: 'snake33madb@gmail.com', // Destinatario fijo solicitado
+        subject: 'Recuperación de Contraseña - Peluquería Xoaquín',
+        text: `Hola,
+        
+La contraseña actual de tu panel de administración es: ${settings.password_admin}
+
+Saludos,
+Peluquería Xoaquín.`
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        res.json({ success: true, message: 'Contraseña enviada a snake33madb@gmail.com' });
+    } catch (error) {
+        console.error('Error enviando email:', error);
+        res.status(500).json({ error: 'Error al enviar el correo. Verifica las credenciales en el servidor.' });
+    }
+});
+
 app.listen(PORT, () => {
-    console.log(`Servidor de Turnos Barbería corriendo en http://localhost:${PORT}`);
+    console.log(`Servidor de Peluquería Xoaquín corriendo en http://localhost:${PORT}`);
 });

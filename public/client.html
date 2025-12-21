@@ -15,8 +15,8 @@
         <div id="closed-message" class="aviso-sistema hidden"></div>
 
         <div class="box">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h2>Turnos - Cliente</h2>
+            <div class="flex-between">
+                <h2>Peluquería Xoaquín</h2>
                 <a href="index.html" style="font-size:12px; text-decoration:none;">&larr; Volver</a>
             </div>
 
@@ -32,20 +32,32 @@
                     <input type="text" id="nombre-input" placeholder="Tu nombre" required>
                     <input type="tel" id="telefono-input" placeholder="Móvil (Opcional - Notificación)"
                         style="margin-top:5px; margin-bottom:10px;">
-                    <button id="btn-pedir" style="width:100%;">✂️ Pedir mi turno</button>
+
+                    <label for="para-quien-select" style="font-weight:bold; display:block; margin-bottom:5px;">¿Para
+                        quién es el turno?</label>
+                    <select id="para-quien-select"
+                        style="width:100%; padding:12px; border-radius:8px; border:2px solid #ddd; background:rgba(255,255,255,0.9); margin-bottom:15px; font-size:16px;">
+                        <option value="Personal">✂️ Para Mí (Personal)</option>
+                        <option value="Hijo">👶 Hijo</option>
+                        <option value="Padre">👨 Padre</option>
+                        <option value="Hermano">👦 Hermano</option>
+                        <option value="Primo">🙎‍♂️ Primo</option>
+                        <option value="Amigo">🤜🤛 Amigo</option>
+                        <option value="Otro">👤 Otro</option>
+                    </select>
+
+                    <button id="btn-pedir" style="width:100%;">✂️ Pedir turno</button>
+                    <p style="font-size:0.9em; color:#555; margin-top:10px;">* Puedes pedir varios turnos para
+                        diferentes personas sin salir de esta pantalla.</p>
                 </div>
             </div>
 
-            <!-- Vista de Turno Activo -->
-            <div id="turno-display" class="hidden">
-                <p>Hola <strong id="cliente-nombre"></strong> — tu turno:</p>
-                <div id="turno-numero">#0</div>
-                <div id="turno-mensaje" style="color: blue;">Esperando turno...</div>
-
-                <p>Reloj: <span id="reloj-actual"></span></p>
-                <p>Tiempo en silla: <span id="crono" style="font-weight:bold;">00:00</span></p>
-
-                <button id="btn-cancelar" class="btn-cancel" style="margin-top:15px;">Cancelar mi turno</button>
+            <!-- Vista de Turnos Activos (Lista) -->
+            <div id="active-turns-container" class="hidden" style="margin-top:20px;">
+                <h3 style="border-bottom:1px solid #ccc; padding-bottom:10px;">Mis Turnos Activos</h3>
+                <div id="turnos-list">
+                    <!-- Cards will be injected here via JS -->
+                </div>
             </div>
         </div>
     </div>
