@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Turnos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="box">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h2>Historial del Día</h2>
+                <a href="index.html" style="font-size:12px; text-decoration:none;">&larr; Volver</a>
+            </div>
+
+            <p><strong>Fecha:</strong> <span id="fecha-hoy"></span></p>
+
+            <ul id="historial-list" class="historial-list">
+                <li>Cargando...</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('fecha-hoy').textContent = new Date().toLocaleDateString();
+
+        fetch('/api/turnos')
+            .then(r => r.json())
+            .then(turnos => {
+                const list = document.getElementById('historial-list');
+                list.innerHTML = '';
+
+                if (turnos.length === 0) {
+                    list.innerHTML = '<li>No hay turnos registrados hoy.</li>';
+                    return;
+                }
+
+                turnos.forEach(t => {
+                    const li = document.createElement('li');
+                    li.textContent = `#${t.numero} — ${t.nombre} — ${t.estado.toUpperCase()}`;
+                    if (t.estado === 'cancelado') li.style.color = 'red';
+                    if (t.estado === 'finalizado') li.style.color = 'gray';
+                    if (t.estado === 'activo') li.style.color = 'green';
+                    list.appendChild(li);
+                });
+            })
+            .catch(err => {
+                document.getElementById('historial-list').innerHTML = '<li>Error al cargar historial.</li>';
+            });
+    </script>
+</body>
+
+</html>

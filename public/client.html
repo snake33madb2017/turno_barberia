@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barbería - Turnos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+
+        <!-- Mensaje de Estado (Cerrado) -->
+        <div id="closed-message" class="aviso-sistema hidden"></div>
+
+        <div class="box">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h2>Turnos - Cliente</h2>
+                <a href="index.html" style="font-size:12px; text-decoration:none;">&larr; Volver</a>
+            </div>
+
+            <p><strong>Fecha:</strong> <span id="fecha-hoy">Cargando...</span></p>
+
+            <!-- Formulario Pedir Turno -->
+            <div id="form-container">
+                <p>Ingresa tu nombre para solicitar un turno:</p>
+                <!-- Using flex-mobile-col to stack on mobile, row on desktop if >600px handled by CSS logic (or naturally block on mobile) -->
+                <!-- The CSS for input default is width 100%, and query changes it. 
+                     We should wrap them in a div that handles layout naturally. -->
+                <div>
+                    <input type="text" id="nombre-input" placeholder="Tu nombre" required>
+                    <input type="tel" id="telefono-input" placeholder="Móvil (Opcional - Notificación)"
+                        style="margin-top:5px; margin-bottom:10px;">
+                    <button id="btn-pedir" style="width:100%;">✂️ Pedir mi turno</button>
+                </div>
+            </div>
+
+            <!-- Vista de Turno Activo -->
+            <div id="turno-display" class="hidden">
+                <p>Hola <strong id="cliente-nombre"></strong> — tu turno:</p>
+                <div id="turno-numero">#0</div>
+                <div id="turno-mensaje" style="color: blue;">Esperando turno...</div>
+
+                <p>Reloj: <span id="reloj-actual"></span></p>
+                <p>Tiempo en silla: <span id="crono" style="font-weight:bold;">00:00</span></p>
+
+                <button id="btn-cancelar" class="btn-cancel" style="margin-top:15px;">Cancelar mi turno</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sonidos -->
+    <audio id="sound-start" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
+    <audio id="sound-end" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"
+        preload="auto"></audio>
+
+    <script src="client.js"></script>
+</body>
+
+</html>

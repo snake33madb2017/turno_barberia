@@ -1,0 +1,347 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    /* Darker overlay on background image */
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('images/bg.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    margin: 0;
+    min-height: 100vh;
+}
+
+.container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.box {
+    /* Glassmorphism: Transparent & Blurry */
+    background: rgba(255, 255, 255, 0.85);
+    /* Slightly more opaque for readability */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    /* Stronger shadow for contrast */
+    margin-bottom: 20px;
+    box-sizing: border-box;
+}
+
+h1,
+h2,
+h3 {
+    margin-top: 0;
+    color: #111;
+    /* Darker black */
+}
+
+h1 {
+    font-size: 1.8rem;
+}
+
+h2 {
+    font-size: 1.5rem;
+}
+
+/* Formularios */
+input[type="text"],
+input[type="password"],
+input[type="tel"],
+input[type="time"] {
+    width: 100%;
+    max-width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    /* Thicker border */
+    border-radius: 8px;
+    font-size: 16px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    /* Input background slightly distinct */
+    color: #000;
+}
+
+input:focus {
+    border-color: #000;
+    /* Black focus border */
+    outline: none;
+}
+
+/* Bots Black & White Theme */
+button {
+    padding: 12px 20px;
+    border: 2px solid #000;
+    border-radius: 8px;
+    background: #000;
+    color: #fff;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    touch-action: manipulation;
+}
+
+button:hover {
+    background: #fff;
+    color: #000;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #555;
+    border-color: #555;
+}
+
+.btn-cancel {
+    background: #fff;
+    color: #000;
+    border-color: #000;
+}
+
+.btn-cancel:hover {
+    background: #000;
+    color: #fff;
+}
+
+.btn-start {
+    background: #000;
+    color: #fff;
+}
+
+.btn-start:hover {
+    background: #333;
+    border-color: #333;
+}
+
+.btn-stop {
+    background: #fff;
+    color: #000;
+    border-color: #000;
+}
+
+.btn-stop:hover {
+    background: #eee;
+}
+
+/* Layout Utilities */
+.flex-row {
+    display: flex;
+    gap: 10px;
+}
+
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Tablas */
+.table-responsive {
+    width: 100%;
+    overflow-x: visible;
+}
+
+.box table {
+    background: transparent;
+    /* Table follows box transparency */
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 20px;
+    min-width: 600px;
+}
+
+table th,
+table td {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 12px 8px;
+    text-align: center;
+}
+
+table th {
+    background: #f9f9f9;
+}
+
+/* Estados */
+.estado-pendiente {
+    color: #0073aa;
+    font-weight: bold;
+}
+
+.estado-activo {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.estado-finalizado {
+    color: #6c757d;
+}
+
+.estado-cancelado {
+    color: #d9534f;
+}
+
+/* Cliente View */
+#turno-display {
+    text-align: center;
+    padding: 10px;
+}
+
+#turno-numero {
+    font-size: 60px;
+    /* Bigger for mobile visibility */
+    font-weight: bold;
+    color: #333;
+    margin: 10px 0;
+    line-height: 1;
+}
+
+#turno-mensaje {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.aviso-sistema {
+    padding: 15px;
+    border-radius: 6px;
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+    margin-bottom: 20px;
+}
+
+/* Historial */
+.historial-list {
+    list-style: none;
+    padding: 0;
+}
+
+.historial-list li {
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 0.95rem;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Mobile Specific Adjustments */
+@media (max-width: 600px) {
+
+    /* Remove horizontal scroll availability in card mode */
+    .table-responsive {
+        overflow-x: visible;
+    }
+
+    .box {
+        padding: 10px;
+        /* More space for content on mobile */
+    }
+
+    /* Responsive Table Card View */
+    table,
+    thead,
+    tbody,
+    th,
+    td,
+    tr {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        min-width: 0;
+        /* RESET min-width to prevent overflow */
+    }
+
+    thead tr {
+        display: none;
+        /* Hide header completely */
+    }
+
+    tr {
+        margin-bottom: 20px;
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        /* Softer corners */
+        padding: 15px;
+        background: #fff;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        /* Better shadow */
+    }
+
+    td {
+        display: flex;
+        /* Flexbox for Label - Value alignment */
+        justify-content: space-between;
+        align-items: center;
+        border: none;
+        border-bottom: 1px solid #f0f0f0;
+        padding: 12px 0;
+        min-height: 40px;
+        text-align: right;
+    }
+
+    td:last-child {
+        border-bottom: none;
+        display: block;
+        /* Actions row can be block to allow buttons to expand */
+        text-align: center;
+        padding-top: 15px;
+    }
+
+    td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #555;
+        text-align: left;
+        margin-right: 15px;
+        /* Spacing between label and value */
+        flex-shrink: 0;
+        /* Prevent label from shrinking */
+    }
+
+    /* Make buttons full width on mobile cards for better usability */
+    td:last-child button {
+        width: 100%;
+        margin-bottom: 8px;
+        padding: 12px;
+    }
+
+    td:last-child button:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Input Helpers */
+    input[type="checkbox"] {
+        width: auto !important;
+        margin-right: 5px;
+    }
+}
+
+@media (min-width: 600px) {
+    body {
+        padding: 20px;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+        width: 70%;
+        margin-right: 8px;
+        margin-bottom: 0;
+        display: inline-block;
+    }
+
+    .flex-mobile-col {
+        flex-direction: row;
+    }
+}

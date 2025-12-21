@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrador</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="box">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h2>Panel Administrador</h2>
+                <a href="index.html" style="font-size:12px; text-decoration:none;">&larr; Volver</a>
+            </div>
+
+            <!-- Login -->
+            <div id="login-container">
+                <p>Ingresa la contraseña de administrador:</p>
+                <form id="login-form">
+                    <input type="password" id="admin-pass" placeholder="Contraseña" required>
+                    <button type="submit">Ingresar</button>
+                </form>
+                <p id="login-error" style="color:red; display:none;">Contraseña incorrecta</p>
+            </div>
+
+            <!-- Dashboard -->
+            <div id="dashboard-container" class="hidden">
+                <p><strong>Fecha:</strong> <span id="admin-fecha"></span></p>
+
+                <div
+                    style="background:#f8f9fa; padding:10px; border-radius:6px; margin-bottom:15px; border:1px solid #ddd;">
+                    <strong>Control de Limpieza:</strong>
+                    <button id="btn-reset-dia" style="background:#6c757d; font-size:12px; margin-left:10px;">🧹 Limpiar
+                        Hoy</button>
+                    <button id="btn-reset-todo" style="background:#343a40; font-size:12px; margin-left:5px;">🧨 Limpiar
+                        Todo</button>
+                </div>
+
+                <div
+                    style="background:#e9ecef; padding:10px; border-radius:6px; margin-bottom:15px; border:1px solid #ced4da;">
+                    <details>
+                        <summary style="cursor:pointer; font-weight:bold;">⚙️ Configuración (CMS)</summary>
+                        <form id="settings-form" style="margin-top:10px;">
+                            <div style="margin-bottom:10px;">
+                                <label>Horario Apertura:</label>
+                                <input type="time" id="cfg-apertura" required>
+                                <label>Cierre:</label>
+                                <input type="time" id="cfg-cierre" required>
+                            </div>
+                            <div style="margin-bottom:10px;">
+                                <label>Días Laborables:</label><br>
+                                <input type="checkbox" name="dias" value="1"> Lun
+                                <input type="checkbox" name="dias" value="2"> Mar
+                                <input type="checkbox" name="dias" value="3"> Mie
+                                <input type="checkbox" name="dias" value="4"> Jue
+                                <input type="checkbox" name="dias" value="5"> Vie
+                                <input type="checkbox" name="dias" value="6"> Sab
+                                <input type="checkbox" name="dias" value="0"> Dom
+                            </div>
+                            <div
+                                style="margin-bottom:10px; padding:10px; background:#fff3cd; border:1px solid #ffeeba;">
+                                <label style="font-weight:bold;">Estado Manual:</label><br>
+                                <input type="checkbox" id="cfg-pausa"> ⏸ ACTIVAR PAUSA / DESCANSO<br>
+                                <input type="text" id="cfg-msg-pausa" placeholder="Mensaje de pausa"
+                                    style="width:100%; margin-top:5px;">
+                            </div>
+                            <div style="margin-bottom:10px;">
+                                <label>Cambiar Contraseña Admin:</label>
+                                <input type="text" id="cfg-password" placeholder="Nueva contraseña">
+                            </div>
+                            <button type="submit" style="background:#17a2b8;">Guardar Cambios</button>
+                        </form>
+                    </details>
+                </div>
+
+                <h3>Turnos Pendientes / Activos</h3>
+                <div id="lista-turnos">
+                    <!-- Tabla generada por JS -->
+                    <p>Cargando turnos...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="sound-admin"
+        src="http://sibuscaspiso.es/wp-content/uploads/2025/09/sound-alert-device-turn-on-turn-off-win-done-chakongaudio-174892.mp3"
+        preload="auto"></audio>
+
+    <script src="admin.js"></script>
+</body>
+
+</html>

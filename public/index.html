@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barbería - Inicio</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="box" style="text-align: center;">
+            <h1>💈 Bienvenido a la Barbería 💈</h1>
+            <p>Selecciona una opción para continuar:</p>
+
+            <div style="margin-top: 30px;">
+                <a href="client.html">
+                    <button style="font-size: 18px; margin: 10px;">✂️ Soy Cliente (Pedir Turno)</button>
+                </a>
+                <br>
+                <a href="admin.html">
+                    <button style="font-size: 18px; margin: 10px; background-color: #555;">🔧 Soy Administrador</button>
+                </a>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <a href="history.html" style="color: #666; text-decoration: none;">Ver Historial de Turnos</a>
+            </div>
+
+            <div id="status-msg" style="margin-top: 30px; font-size: 14px; color: #888;">
+                Cargando estado de la barbería...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        fetch('/api/status')
+            .then(res => res.json())
+            .then(data => {
+                const el = document.getElementById('status-msg');
+                if (!data.abierto) {
+                    el.innerHTML = `<span style="color: red; font-weight: bold;">CERRADO</span><br>${data.mensaje}`;
+                } else {
+                    el.innerHTML = `<span style="color: green; font-weight: bold;">ABIERTO</span> - ${data.fecha} ${data.hora}`;
+                }
+            })
+            .catch(err => {
+                document.getElementById('status-msg').innerText = 'Error conectando con el servidor.';
+            });
+    </script>
+</body>
+
+</html>
