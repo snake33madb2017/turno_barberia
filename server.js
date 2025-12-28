@@ -8,6 +8,7 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const DATA_FILE = path.join(__dirname, 'data', 'data.json');
+const DATA_DIR = path.dirname(DATA_FILE);
 
 // Middleware
 app.use(cors());
@@ -17,6 +18,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Inicializar archivo de datos si no existe
 function inicializarDatos() {
+    // Asegurar que el directorio data exista
+    if (!fs.existsSync(DATA_DIR)) {
+        fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+
     if (!fs.existsSync(DATA_FILE)) {
         const initialState = {
             config: {
